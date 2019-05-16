@@ -4,11 +4,15 @@ import AppHeader from '../app-header';
 import SearchPanel from '../search-panel';
 import TodoList from '../todo-list';
 import ItemStatusFilter from '../item-status-filter';
+import ItemAddForm from '../item-add-form';
 import './app.css';
 
 export default class App extends Component {
   constructor() {
     super();
+    
+    this.maxId = 100;
+    
     this.state = {
       todoData: [
         { label: 'Drink Coffee', important: false, id: 1 },
@@ -16,17 +20,33 @@ export default class App extends Component {
         { label: 'Have a lunch', important: false, id: 3 }
       ]
     };
+    
     this.deleteItem = (id) => {
-    this.setState(({ todoData }) => {
-      const index = todoData.findIndex( (el) => el.id === id );
-      const newArray = [
-        ...todoData.slice(0, index),
-        ...todoData.slice(index + 1)
-      ];
-      return {
-        todoData: newArray,
-      }
-    });
+      this.setState(({ todoData }) => {
+        const index = todoData.findIndex( (el) => el.id === id );
+        const newArray = [
+          ...todoData.slice(0, index),
+          ...todoData.slice(index + 1)
+        ];
+        return {
+          todoData: newArray,
+        }
+      });
+    };
+    
+    this.addItem = (text) => {
+      const newItem = {
+        label: text,
+        important: false, 
+        id: this.maxId++,
+      };
+      
+      this.setState(({ todoData }) => {
+        const newArr = [...todoData, newItem];
+        return {
+          todoData: newArr,
+        };
+      });
     };
   }
   
@@ -43,6 +63,8 @@ export default class App extends Component {
           todos={this.state.todoData}
           onDeleted={this.deleteItem}
         />
+        
+        <ItemAddForm addItem={this.addItem} />
       </div>
     );
   }
