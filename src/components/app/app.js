@@ -10,39 +10,62 @@ import './app.css';
 export default class App extends Component {
   constructor() {
     super();
-    
+
     this.maxId = 100;
-    
+
+    this.createItem = (label) => {
+      return {
+        label,
+        important: false, 
+        done: false,
+        id: this.maxId++,
+      }
+    };
+
     this.state = {
       todoData: [
-        { label: 'Drink Coffee', important: false, id: 1 },
-        { label: 'Make Awesome App', important: true, id: 2 },
-        { label: 'Have a lunch', important: false, id: 3 }
-      ]
+        this.createItem('Drink Coffee'),
+        this.createItem('Make Awesome App'),
+        this.createItem('Have a lunch'),
+      ],
     };
-    
+
     this.deleteItem = (id) => {
       this.setState(({ todoData }) => {
-        const index = todoData.findIndex( (el) => el.id === id );
-        const newArray = [
+        const index = todoData.findIndex((el) => el.id === id);
+        const newArr = [
           ...todoData.slice(0, index),
           ...todoData.slice(index + 1)
         ];
         return {
-          todoData: newArray,
+          todoData: newArr,
         }
       });
     };
-    
+
     this.addItem = (text) => {
-      const newItem = {
-        label: text,
-        important: false, 
-        id: this.maxId++,
-      };
-      
+      const newItem = this.createItem(text);
+
       this.setState(({ todoData }) => {
         const newArr = [...todoData, newItem];
+        return {
+          todoData: newArr,
+        };
+      });
+    };
+
+    this.onToggleDone = (id) => {
+      this.setState(({ todoData }) => {
+        const index = todoData.findIndex((el) => el.id === id);
+        const oldItem = todoData[index];
+        const newItem = {...oldItem, done: !oldItem.done};
+        
+        const newArr = [
+          ...todoData.slice(0, index),
+          newItem,
+          ...todoData.slice(index + 1),
+        ];
+        
         return {
           todoData: newArr,
         };
@@ -52,12 +75,8 @@ export default class App extends Component {
     this.onToggleImportant = (id) => {
       console.log('Toggle Important', id);
     };
-    
-    this.onToggleDone = (id) => {
-      console.log('Toggle Done', id);
-    };
   }
-  
+
   render() {
     return (
       <div className="todo-app">
@@ -73,7 +92,7 @@ export default class App extends Component {
           onToggleImportant={this.onToggleImportant}
           onToggleDone={this.onToggleDone}
         />
-        
+
         <ItemAddForm addItem={this.addItem} />
       </div>
     );
